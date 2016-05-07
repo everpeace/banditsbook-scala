@@ -20,18 +20,21 @@
  */
 
 package com.github.everpeace.banditsbook
+import com.github.everpeace.banditsbook.algorithm._
 
-import breeze.linalg._
-import breeze.stats.distributions.{ApacheDiscreteDistribution, Rand}
-import org.apache.commons.math3.distribution.{AbstractIntegerDistribution, EnumeratedIntegerDistribution}
+object TestAll extends App {
+  new epsilon_greedy._TestStandard{}.run()
+  println()
 
-package object algorithm {
+  new softmax._TestStandard{}.run()
+  println()
 
-  type Seq[+T] = scala.collection.immutable.Seq[T]
+  new exp3._TestExp3 {}.run()
+  println()
 
-  def CategoricalDistribution(probs: Vector[Double]): Rand[Int] = new ApacheDiscreteDistribution {
-      override protected val inner: AbstractIntegerDistribution
-      = new EnumeratedIntegerDistribution((0 until probs.size).toArray, probs.copy.valuesIterator.toArray)
-    }
+  new hedge._TestHedge {}.run()
+  println()
 
+  new ucb._TestUCB1{}.run()
+  println()
 }
