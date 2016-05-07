@@ -21,7 +21,7 @@
 
 package com.github.everpeace.banditsbook.algorithm.epsilon_greedy
 
-import java.io.{BufferedWriter, PrintWriter}
+import java.io.{File, PrintWriter}
 
 import breeze.linalg._
 import breeze.stats.MeanAndVariance
@@ -42,11 +42,12 @@ trait _TestStandard {
 
     val conf = ConfigFactory.load()
     val baseKey = "banditsbook.algorithm.epsilon_greedy.test-standard"
-    val (_means, Some(εs), horizon, nSims) = readConfig(conf, baseKey, Some("εs"))
+    val (_means, Some(εs), horizon, nSims, outDir) = readConfig(conf, baseKey, Some("εs"))
     val means = shuffle(_means)
     val arms = Seq(means:_*).map(μ => BernoulliArm(μ))
 
-    val file = new BufferedWriter(new PrintWriter("test-standard-epsilon-greedy-results.csv"), nSims * horizon)
+    val outputPath = new File(outDir, "test-standard-epsilon-greedy-results.csv")
+    val file = new PrintWriter(outputPath.toString)
     file.write("epsilon, sim_num, step, chosen_arm, reward, cumulative_reward\n")
     try {
       println("---------------------------------")
@@ -90,7 +91,7 @@ trait _TestStandard {
     } finally {
       file.close()
       println("")
-      println("results are written to \"test-standard-epsilon-greedy-results.csv\"")
+      println(s"results are written to ${outputPath}")
     }
   }
 }

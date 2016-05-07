@@ -21,7 +21,7 @@
 
 package com.github.everpeace.banditsbook.algorithm.exp3
 
-import java.io.{BufferedWriter, PrintWriter}
+import java.io.{File, PrintWriter}
 
 import breeze.linalg._
 import breeze.stats.MeanAndVariance
@@ -42,11 +42,12 @@ trait _TestExp3{
 
     val conf = ConfigFactory.load()
     val baseKey = "banditsbook.algorithm.exp3.test-exp3"
-    val (_means, Some(γs), horizon, nSims) = readConfig(conf, baseKey, Some("γs"))
+    val (_means, Some(γs), horizon, nSims, outDir) = readConfig(conf, baseKey, Some("γs"))
     val means = shuffle(_means)
     val arms = Seq(means:_*).map(μ => BernoulliArm(μ))
 
-    val file = new BufferedWriter(new PrintWriter("test-exp3-results.csv"), nSims * horizon)
+    val outputPath = new File(outDir, "test-exp3-results.csv")
+    val file = new PrintWriter(outputPath.toString)
     file.write("gamma, sim_num, step, chosen_arm, reward, cumulative_reward\n")
     try {
       println("-------------------------------")
@@ -90,7 +91,7 @@ trait _TestExp3{
     } finally {
       file.close()
       println("")
-      println("results are written to \"test-exp3-results.csv\"")
+      println(s"results are written to ${outputPath}")
     }
   }
 }

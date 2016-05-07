@@ -21,6 +21,8 @@
 
 package com.github.everpeace.banditsbook.testing_framework
 
+import java.io.File
+
 import breeze.linalg.Vector._
 import breeze.linalg._
 import breeze.stats.MeanAndVariance
@@ -45,7 +47,9 @@ object TestRunner {
     )
     val horizon = conf.getInt(s"$baseKey.horizon")
     val nSims = conf.getInt(s"$baseKey.n-sims")
-    (means, hyper_parameters, horizon, nSims)
+    val outDir = new File(conf.getString(s"banditsbook.algorithm.test-common.out-dir"))
+
+    (means, hyper_parameters, horizon, nSims, outDir)
   }
 
   case class TestRunnerResult(

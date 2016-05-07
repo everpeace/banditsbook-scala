@@ -26,15 +26,16 @@ SBT=$(which sbt)
 R=$(which r)
 OPEN=$(which open)
 PLOT_TOOL_DIR="plot"
+OUTPUT_DIR=${RUN_TEST_OUTPUT_DIR:-output}
 
-available_algs=("standard-epsilon-greedy" "standard-softmax" "exp3" "hedge" "ucb1")
+available_algs=(standard-epsilon-greedy standard-softmax exp3 hedge ucb1)
 
 function show_usage(){
     cat <<EOS
 usage: ./run_test.sh  alg1 alg2 ...
 available algorithm name:
     all ${available_algs[@]}
-
+output dir canbe specified via RUN_TEST_OUTPUT_DIR
 EOS
 }
 
@@ -80,23 +81,24 @@ set -e
 
 for alg in ${target[@]}
 do
-    case ${alg} in
+  case ${alg} in
     "standard-epsilon-greedy" )
-        ${SBT} "run-main com.github.everpeace.banditsbook.algorithm.epsilon_greedy.TestStandard"
+        main_class=com.github.everpeace.banditsbook.algorithm.epsilon_greedy.TestStandard
         ;;
     "standard-softmax" )
-        ${SBT} "run-main com.github.everpeace.banditsbook.algorithm.softmax.TestStandard"
+        main_class=com.github.everpeace.banditsbook.algorithm.softmax.TestStandard
         ;;
     "exp3" )
-        ${SBT} "run-main com.github.everpeace.banditsbook.algorithm.exp3.TestExp3"
+        main_class=com.github.everpeace.banditsbook.algorithm.exp3.TestExp3
         ;;
     "hedge" )
-        ${SBT} "run-main com.github.everpeace.banditsbook.algorithm.hedge.TestHedge"
+        main_class=com.github.everpeace.banditsbook.algorithm.hedge.TestHedge
         ;;
     "ucb1" )
-        ${SBT} "run-main com.github.everpeace.banditsbook.algorithm.ucb.TestUCB1"
+        main_class=com.github.everpeace.banditsbook.algorithm.ucb.TestUCB1
         ;;
     esac
+    ${SBT} -DOUTPUT_DIR=${OUTPUT_DIR} "run-main ${main_class}"
 done
 
 cat <<EOS
@@ -109,21 +111,22 @@ for alg in ${target[@]}
 do
     case ${alg} in
     "standard-epsilon-greedy" )
-        ${R} ${R_OPTS} --file=${PLOT_TOOL_DIR}/plot_standard_epsilon_greedy.r
+        r_script=plot_standard_epsilon_greedy.r
         ;;
     "standard-softmax" )
-        ${R} ${R_OPTS} --file=${PLOT_TOOL_DIR}/plot_standard_softmax.r
+        r_script=plot_standard_softmax.r
         ;;
     "exp3" )
-        ${R} ${R_OPTS} --file=${PLOT_TOOL_DIR}/plot_exp3.r
+        r_script=plot_exp3.r
         ;;
     "hedge" )
-        ${R} ${R_OPTS} --file=${PLOT_TOOL_DIR}/plot_hedge.r
+        r_script=plot_hedge.r
         ;;
     "ucb1" )
-        ${R} ${R_OPTS} --file=plot_tools/plot_ucb1.r
+        r_script=plot_ucb1.r
         ;;
     esac
+    ${R} ${R_OPTS} --file=${PLOT_TOOL_DIR}/${r_script} --outdir=${OUTPUT_DIR}
 done
 
 if [ ${#target[@]} -ne 0 ]
@@ -133,7 +136,7 @@ then
     else
         for alg in ${target[@]}
         do
-            ${OPEN} "test-${alg}-results.png"
+            ${OPEN} "${OUTPUT_DIR}/test-${alg}-results.png"
         done
     fi
 fi

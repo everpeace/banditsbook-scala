@@ -21,7 +21,7 @@
 
 package com.github.everpeace.banditsbook.algorithm.softmax
 
-import java.io.{BufferedWriter, PrintWriter}
+import java.io.{File, PrintWriter}
 
 import breeze.linalg._
 import breeze.stats.MeanAndVariance
@@ -42,11 +42,12 @@ trait _TestStandard {
 
     val conf = ConfigFactory.load()
     val baseKey = "banditsbook.algorithm.softmax.test-standard"
-    val (_means, Some(τs), horizon, nSims) = readConfig(conf, baseKey, Some("τs"))
+    val (_means, Some(τs), horizon, nSims, outDir) = readConfig(conf, baseKey, Some("τs"))
     val means = shuffle(_means)
     val arms = Seq(means:_*).map(μ => BernoulliArm(μ))
 
-    val file = new BufferedWriter(new PrintWriter("test-standard-softmax-results.csv"), nSims * horizon)
+    val outputPath = new File(outDir, "test-standard-softmax-results.csv")
+    val file = new PrintWriter(outputPath.toString)
     file.write("tau, sim_num, step, chosen_arm, reward, cumulative_reward\n")
     try {
       println("-------------------------------")
@@ -90,7 +91,7 @@ trait _TestStandard {
     } finally {
       file.close()
       println("")
-      println("results are written to \"test-standard-softmax-results.csv\"")
+      println(s"results are written to ${outputPath}")
     }
   }
 }

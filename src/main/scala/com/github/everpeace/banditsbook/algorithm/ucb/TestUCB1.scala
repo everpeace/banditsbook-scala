@@ -21,7 +21,7 @@
 
 package com.github.everpeace.banditsbook.algorithm.ucb
 
-import java.io.{BufferedWriter, PrintWriter}
+import java.io.{File, PrintWriter}
 
 import breeze.linalg._
 import com.github.everpeace.banditsbook.arm._
@@ -41,12 +41,13 @@ trait _TestUCB1 {
 
     val conf = ConfigFactory.load()
     val baseKey = "banditsbook.algorithm.ucb.test-ucb1"
-    val (_means, _, horizon, nSims) = readConfig(conf, baseKey)
+    val (_means, _, horizon, nSims, outDir) = readConfig(conf, baseKey)
     val means = shuffle(_means)
     val arms = Seq(means:_*).map(μ => BernoulliArm(μ))
 
 
-    val file =new BufferedWriter( new PrintWriter("test-ucb1-results.csv"), nSims * horizon)
+    val outputPath = new File(outDir, "test-ucb1-results.csv")
+    val file = new PrintWriter(outputPath.toString)
     file.write("sim_num, step, chosen_arm, reward, cumulative_reward\n")
     try {
       println("-------------------------------")
@@ -79,7 +80,7 @@ trait _TestUCB1 {
     } finally {
       file.close()
       println("")
-      println("results are written to \"test-ucb1-results.csv\"")
+      println(s"results are written to ${outputPath}")
     }
   }
 }

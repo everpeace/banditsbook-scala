@@ -21,7 +21,7 @@
 
 package com.github.everpeace.banditsbook.algorithm.hedge
 
-import java.io.{BufferedWriter, PrintWriter}
+import java.io.{File, PrintWriter}
 
 import breeze.linalg._
 import breeze.stats.MeanAndVariance
@@ -42,11 +42,12 @@ trait _TestHedge {
 
     val conf = ConfigFactory.load()
     val baseKey = "banditsbook.algorithm.hedge.test-hedge"
-    val (_means, Some(ηs), horizon, nSims) = readConfig(conf, baseKey, Some("ηs"))
+    val (_means, Some(ηs), horizon, nSims, outDir) = readConfig(conf, baseKey, Some("ηs"))
     val means = shuffle(_means)
     val arms = Seq(means:_*).map(μ => BernoulliArm(μ))
 
-    val file = new BufferedWriter(new PrintWriter("test-hedge-results.csv"), nSims * horizon)
+    val outputPath = new File(outDir, "test-hedge-results.csv")
+    val file = new PrintWriter(outputPath.toString)
     file.write("eta, sim_num, step, chosen_arm, reward, cumulative_reward\n")
     try {
       println("-------------------------------")
@@ -90,7 +91,7 @@ trait _TestHedge {
     } finally {
       file.close()
       println("")
-      println("results are written to \"test-hedge-results.csv\"")
+      println(s"results are written to ${outputPath}")
     }
   }
 }

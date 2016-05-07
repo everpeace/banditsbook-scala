@@ -26,13 +26,15 @@ initial.options <- commandArgs(trailingOnly = FALSE)
 file.arg.name <- "--file="
 script.name <- sub(file.arg.name, "", initial.options[grep(file.arg.name, initial.options)])
 script.basename <- dirname(script.name)
+ourdir.arg.name <- "--outdir="
+outdir <- sub(ourdir.arg.name, "", initial.options[grep(ourdir.arg.name, initial.options)])
 
 source(file.path(script.basename, "plot_cumulative_rewards.r"))
 source(file.path(script.basename, "read_data.r"))
 library(stringr)
 
 # read data
-datafile_path <- file.path(script.basename, "..", "test-standard-softmax-results.csv")
+datafile_path <- file.path(script.basename, "..", outdir, "test-standard-softmax-results.csv")
 df <- read_data_with_hyper_param(datafile_path)
 
 # plot
