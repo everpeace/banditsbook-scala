@@ -16,6 +16,9 @@ project/plugins/project/
 .scala_dependencies
 .worksheet
 
+# Idea
+.idea
+
 # Created by https://www.gitignore.io/api/r
 
 ### R ###
